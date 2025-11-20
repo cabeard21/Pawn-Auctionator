@@ -580,7 +580,7 @@
 
 		<Frames>
 			<Frame>
-				<Size><AbsDimension x="160" y="22" /></Size>		
+				<Size><AbsDimension x="160" y="22" /></Size>
 				<Anchors><Anchor point="TOPLEFT"><Offset x="15" y="-62"/></Anchor></Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -592,9 +592,9 @@
 					<OnLeave>	GameTooltip:Hide();		</OnLeave>
 				</Scripts>
 			</Frame>
-			
+
 			<Frame name="Atr_scanLevelDD" inherits="UIDropDownMenuTemplate">
-				<Size><AbsDimension x="220" y="22" /></Size>		
+				<Size><AbsDimension x="220" y="22" /></Size>
 				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="160" y="-60"/></Offset></Anchor></Anchors>
 				<Scripts>
 					<OnLoad>
@@ -603,6 +603,33 @@
 						UIDropDownMenu_JustifyText (Atr_scanLevelDD, "LEFT");
 					</OnLoad>
 					<OnEnter>	Atr_scanLevelDD_showTip(self);	</OnEnter>
+					<OnLeave>	GameTooltip:Hide();		</OnLeave>
+				</Scripts>
+			</Frame>
+
+			<Frame name="Atr_PawnScaleFrame" hidden="true">
+				<Size><AbsDimension x="160" y="22" /></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset x="15" y="-132"/></Anchor></Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parent_Label" inherits="GameFontNormal" text="PAWN scale:"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>	Atr_pawnScaleDD_showTip(self);	</OnEnter>
+					<OnLeave>	GameTooltip:Hide();		</OnLeave>
+				</Scripts>
+			</Frame>
+
+			<Frame name="Atr_pawnScaleDD" inherits="UIDropDownMenuTemplate" hidden="true">
+				<Size><AbsDimension x="220" y="22" /></Size>
+				<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="160" y="-132"/></Offset></Anchor></Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_JustifyText (Atr_pawnScaleDD, "LEFT");
+						Atr_pawnScaleDD_Refresh();
+					</OnLoad>
+					<OnEnter>	Atr_pawnScaleDD_showTip(self);	</OnEnter>
 					<OnLeave>	GameTooltip:Hide();		</OnLeave>
 				</Scripts>
 			</Frame>

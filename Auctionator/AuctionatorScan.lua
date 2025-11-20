@@ -20,6 +20,8 @@ local ATR_SORTBY_NAME_ASC = 0;
 local ATR_SORTBY_NAME_DES = 1;
 local ATR_SORTBY_PRICE_ASC = 2;
 local ATR_SORTBY_PRICE_DES = 3;
+local ATR_SORTBY_PAWN_ASC = 4;
+local ATR_SORTBY_PAWN_DES = 5;
 
 -----------------------------------------
 
@@ -604,6 +606,27 @@ local function Atr_SortScans (x, y)
 	if (gSortScansBy == ATR_SORTBY_PRICE_ASC) then		return xprice < yprice;		end
 	if (gSortScansBy == ATR_SORTBY_PRICE_DES) then		return xprice > yprice;		end
 
+	-- PAWN score sorting
+	if (gSortScansBy == ATR_SORTBY_PAWN_ASC or gSortScansBy == ATR_SORTBY_PAWN_DES) then
+		local xscore = 0;
+		local yscore = 0;
+
+		if (AuctionatorPawn and AuctionatorPawn:IsAvailable()) then
+			if (x.itemLink) then
+				xscore = AuctionatorPawn:GetItemScore(x.itemLink) or 0;
+			end
+			if (y.itemLink) then
+				yscore = AuctionatorPawn:GetItemScore(y.itemLink) or 0;
+			end
+		end
+
+		if (gSortScansBy == ATR_SORTBY_PAWN_ASC) then
+			return xscore < yscore;
+		else
+			return xscore > yscore;
+		end
+	end
+
 end
 
 -----------------------------------------
@@ -679,10 +702,27 @@ end
 
 -----------------------------------------
 
+function AtrSearch:ClickPawnCol()
+
+	if (self.sortHow == ATR_SORTBY_PAWN_DES) then
+		self.sortHow = ATR_SORTBY_PAWN_ASC;
+	else
+		self.sortHow = ATR_SORTBY_PAWN_DES;
+	end
+
+	gSortScansBy = self.sortHow;
+	table.sort (self.sortedScans, Atr_SortScans);
+end
+
+-----------------------------------------
+
 function AtrSearch:UpdateArrows()
 
 	Atr_Col1_Heading_ButtonArrow:Hide();
 	Atr_Col3_Heading_ButtonArrow:Hide();
+	if (Atr_Col5_Heading_ButtonArrow) then
+		Atr_Col5_Heading_ButtonArrow:Hide();
+	end
 
 	if (self.sortHow == ATR_SORTBY_PRICE_ASC) then
 		Atr_Col1_Heading_ButtonArrow:Show();
@@ -696,6 +736,16 @@ function AtrSearch:UpdateArrows()
 	elseif (self.sortHow == ATR_SORTBY_NAME_DES) then
 		Atr_Col3_Heading_ButtonArrow:Show();
 		Atr_Col3_Heading_ButtonArrow:SetTexCoord(0, 0.5625, 1.0, 0);
+	elseif (self.sortHow == ATR_SORTBY_PAWN_ASC) then
+		if (Atr_Col5_Heading_ButtonArrow) then
+			Atr_Col5_Heading_ButtonArrow:Show();
+			Atr_Col5_Heading_ButtonArrow:SetTexCoord(0, 0.5625, 0, 1.0);
+		end
+	elseif (self.sortHow == ATR_SORTBY_PAWN_DES) then
+		if (Atr_Col5_Heading_ButtonArrow) then
+			Atr_Col5_Heading_ButtonArrow:Show();
+			Atr_Col5_Heading_ButtonArrow:SetTexCoord(0, 0.5625, 1.0, 0);
+		end
 	end
 end
 

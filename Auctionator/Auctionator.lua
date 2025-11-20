@@ -539,6 +539,13 @@ function Atr_OnAddonLoaded()
 		end
 	end
 
+	if (zc.StringSame (addonName, "Pawn")) then
+		-- PAWN addon has loaded, refresh the scale dropdown if it exists
+		if (Atr_pawnScaleDD and Atr_PawnScaleFrame and Atr_pawnScaleDD_Refresh) then
+			Atr_pawnScaleDD_Refresh();
+		end
+	end
+
 	Atr_Check_For_Conflicts (addonName);
 end
 
@@ -2827,13 +2834,32 @@ end
 
 -----------------------------------------
 
+function Atr_Onclick_Col5 ()
+
+	if (gCurrentPane.activeSearch) then
+		gCurrentPane.activeSearch:ClickPawnCol();
+		gCurrentPane.UINeedsUpdate = true;
+	end
+
+end
+
+-----------------------------------------
+
 function Atr_ShowSearchSummary()
 
 	Atr_Col1_Heading:Hide();
 	Atr_Col3_Heading:Hide();
+	Atr_Col5_Heading:Hide();
 	Atr_Col1_Heading_Button:Show();
 	Atr_Col3_Heading_Button:Show();
 	Atr_Col4_Heading:Show();
+
+	local showPawnColumn = (AuctionatorPawn and AuctionatorPawn:IsAvailable());
+	if (showPawnColumn) then
+		Atr_Col5_Heading_Button:Show();
+	else
+		Atr_Col5_Heading_Button:Hide();
+	end
 
 	gCurrentPane.activeSearch:UpdateArrows ();
 
@@ -2879,10 +2905,14 @@ function Atr_ShowSearchSummary()
 			local lineEntry_itemtext	= _G["AuctionatorEntry"..line.."_PerItem_Text"];
 			local lineEntry_text		= _G["AuctionatorEntry"..line.."_EntryText"];
 			local lineEntry_stack		= _G["AuctionatorEntry"..line.."_StackPrice"];
+			local lineEntry_pawn		= _G["AuctionatorEntry"..line.."_PawnFrame_PawnScore"];
 
 			lineEntry_itemtext:SetText	("");
 			lineEntry_text:SetText	("");
 			lineEntry_stack:SetText	("");
+			if (lineEntry_pawn) then
+				lineEntry_pawn:SetText("");
+			end
 
 			lineEntry_text:GetParent():SetPoint ("LEFT", 157, 0);
 
@@ -2914,6 +2944,19 @@ function Atr_ShowSearchSummary()
 				MoneyFrame_Update (lineEntry_item_tag, zc.round(data.buyoutPrice/data.stackSize) );
 			end
 
+			-- Display PAWN score if available
+			if (showPawnColumn and lineEntry_pawn and scn.itemLink) then
+				local pawnScore = AuctionatorPawn:GetItemScore(scn.itemLink);
+				if (pawnScore) then
+					local scoreText = AuctionatorPawn:FormatScore(pawnScore);
+					lineEntry_pawn:SetText(scoreText);
+					local r, g, b = AuctionatorPawn:GetScoreColor(pawnScore);
+					lineEntry_pawn:SetTextColor(r, g, b);
+				else
+					lineEntry_pawn:SetText("");
+				end
+			end
+
 			if (zc.StringSame (scn.itemName , gCurrentPane.SS_hilite_itemName)) then
 				highIndex = dataOffset;
 			end
@@ -2933,9 +2976,12 @@ function Atr_ShowCurrentAuctions()
 	Atr_Col1_Heading:Hide();
 	Atr_Col3_Heading:Hide();
 	Atr_Col4_Heading:Hide();
+	Atr_Col5_Heading:Hide();
 	Atr_Col1_Heading_Button:Hide();
 	Atr_Col3_Heading_Button:Hide();
+	Atr_Col5_Heading_Button:Hide();
 
+	local showPawnColumn = (AuctionatorPawn and AuctionatorPawn:IsAvailable());
 
 	local numrows = #gCurrentPane.activeScan.sortedData;
 
@@ -2943,6 +2989,9 @@ function Atr_ShowCurrentAuctions()
 		Atr_Col1_Heading:Show();
 		Atr_Col3_Heading:Show();
 		Atr_Col4_Heading:Show();
+		if (showPawnColumn) then
+			Atr_Col5_Heading:Show();
+		end
 	end
 
 	Atr_Col1_Heading:SetText (ZT("Item Price"));
@@ -2983,10 +3032,14 @@ function Atr_ShowCurrentAuctions()
 			local lineEntry_itemtext	= _G["AuctionatorEntry"..line.."_PerItem_Text"];
 			local lineEntry_text		= _G["AuctionatorEntry"..line.."_EntryText"];
 			local lineEntry_stack		= _G["AuctionatorEntry"..line.."_StackPrice"];
+			local lineEntry_pawn		= _G["AuctionatorEntry"..line.."_PawnFrame_PawnScore"];
 
 			lineEntry_itemtext:SetText	("");
 			lineEntry_text:SetText	("");
 			lineEntry_stack:SetText	("");
+			if (lineEntry_pawn) then
+				lineEntry_pawn:SetText("");
+			end
 
 			lineEntry_text:GetParent():SetPoint ("LEFT", 172, 0);
 
@@ -3033,6 +3086,19 @@ function Atr_ShowCurrentAuctions()
 					if (data.stackSize > 1) then
 						lineEntry_stack:SetText (zc.priceToString(data.buyoutPrice));
 						lineEntry_stack:SetTextColor (0.6, 0.6, 0.6);
+					end
+				end
+
+				-- Display PAWN score if available
+				if (showPawnColumn and lineEntry_pawn and gCurrentPane.activeScan.itemLink) then
+					local pawnScore = AuctionatorPawn:GetItemScore(gCurrentPane.activeScan.itemLink);
+					if (pawnScore) then
+						local scoreText = AuctionatorPawn:FormatScore(pawnScore);
+						lineEntry_pawn:SetText(scoreText);
+						local r, g, b = AuctionatorPawn:GetScoreColor(pawnScore);
+						lineEntry_pawn:SetTextColor(r, g, b);
+					else
+						lineEntry_pawn:SetText("");
 					end
 				end
 

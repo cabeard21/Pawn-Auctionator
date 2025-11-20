@@ -215,7 +215,7 @@
 			</Frame>
 			
 			<Frame>
-				<Size><AbsDimension x="240" y="16" /></Size>
+				<Size><AbsDimension x="210" y="16" /></Size>
 				<Anchors><Anchor point="LEFT"><Offset><AbsDimension x="167" y="0"/></Offset></Anchor></Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -226,15 +226,25 @@
 			
 
 			<Frame>
-				<Size><AbsDimension x="120" y="16" /></Size>
-				<Anchors><Anchor point="LEFT"><Offset><AbsDimension x="440" y="0"/></Offset></Anchor></Anchors>
+				<Size><AbsDimension x="100" y="16" /></Size>
+				<Anchors><Anchor point="LEFT"><Offset><AbsDimension x="390" y="0"/></Offset></Anchor></Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="$parent_StackPrice" inherits="GameFontHighlightSmall" justifyH="RIGHT"/>
 					</Layer>
 				</Layers>
 			</Frame>
-			
+
+			<Frame name="$parent_PawnFrame">
+				<Size><AbsDimension x="60" y="16" /></Size>
+				<Anchors><Anchor point="LEFT"><Offset><AbsDimension x="495" y="0"/></Offset></Anchor></Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString name="$parent_PawnScore" inherits="GameFontHighlightSmall" justifyH="RIGHT"/>
+					</Layer>
+				</Layers>
+			</Frame>
+
 		</Frames>
 
 		<PushedTexture file="Interface\HelpFrame\HelpFrameButton-Highlight">
@@ -876,11 +886,16 @@
 						</FontString>
 
 						<FontString name="Atr_Col4_Heading" inherits="GameFontHighlightSmall" text="Total Price" hidden="true">
-							<Anchors><Anchor point="LEFT" relativePoint="LEFT" relativeTo="$parentMiddle"><Offset><AbsDimension x="500" y="1"/></Offset></Anchor></Anchors>
+							<Anchors><Anchor point="LEFT" relativePoint="LEFT" relativeTo="$parentMiddle"><Offset><AbsDimension x="430" y="1"/></Offset></Anchor></Anchors>
+						</FontString>
+
+						<FontString name="Atr_Col5_Heading" inherits="GameFontHighlightSmall" text="PAWN" hidden="true" justifyH="RIGHT">
+							<Size><AbsDimension x="60"/></Size>
+							<Anchors><Anchor point="LEFT" relativePoint="LEFT" relativeTo="$parentMiddle"><Offset><AbsDimension x="495" y="1"/></Offset></Anchor></Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
-				
+
 				<Frames>
 					<Button name="Atr_Back_Button" text="Back" inherits="UIPanelButtonTemplate"  hidden="true">
 						<Size><AbsDimension x="70" y="18"/></Size>
@@ -901,6 +916,12 @@
 						<Size><AbsDimension x="108" y="20"/></Size>
 						<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="172" y="-21"/></Offset></Anchor></Anchors>
 						<Scripts><OnClick>Atr_Onclick_Col3()</OnClick></Scripts>
+					</Button>
+
+					<Button name="Atr_Col5_Heading_Button" text="PAWN" inherits="Atr_Col_Heading_Template" hidden="true">
+						<Size><AbsDimension x="60" y="20"/></Size>
+						<Anchors><Anchor point="TOPLEFT"><Offset><AbsDimension x="495" y="-21"/></Offset></Anchor></Anchors>
+						<Scripts><OnClick>Atr_Onclick_Col5()</OnClick></Scripts>
 					</Button>
 
 				</Frames>

@@ -658,22 +658,32 @@ function Atr_SetupScanningConfigFrame ()
 
 	UIDropDownMenu_Initialize(Atr_scanLevelDD, Atr_scanLevelDD_Initialize);
 	UIDropDownMenu_SetSelectedValue(Atr_scanLevelDD, AUCTIONATOR_SCAN_MINLEVEL);
+
+	Atr_pawnScaleDD_Refresh();
 end
 
 -----------------------------------------
 
 function Atr_ScanningOptionsFrame_Save()
 
-	local origValues = zc.msg_str (AUCTIONATOR_SCAN_MINLEVEL);
+	local origValues = zc.msg_str (AUCTIONATOR_SCAN_MINLEVEL, AUCTIONATOR_PAWN_SCALE or "");
 
 	AUCTIONATOR_SCAN_MINLEVEL = UIDropDownMenu_GetSelectedValue(Atr_scanLevelDD);
 
-	local newValues = zc.msg_str (AUCTIONATOR_SCAN_MINLEVEL);
+	local selectedScale = UIDropDownMenu_GetSelectedValue(Atr_pawnScaleDD);
+	if (selectedScale and selectedScale ~= "") then
+		AUCTIONATOR_PAWN_SCALE = selectedScale;
+		if (AuctionatorPawn) then
+			AuctionatorPawn:SetConfiguredScale(selectedScale);
+		end
+	end
+
+	local newValues = zc.msg_str (AUCTIONATOR_SCAN_MINLEVEL, AUCTIONATOR_PAWN_SCALE or "");
 
 	if (origValues ~= newValues) then
 		zc.msg_atr (ZT("scanning options saved"));
 	end
-	
+
 end
 
 -----------------------------------------
@@ -703,6 +713,81 @@ function Atr_scanLevelDD_showTip(self)
 	GameTooltip:SetOwner(this, "ANCHOR_LEFT");
 	GameTooltip:SetText(ZT("Minimum Quality Level"), 0.9, 1.0, 1.0);
 	GameTooltip:AddLine(ZT("Only include items in the scanning database that are this level or higher"), 0.5, 0.5, 1.0, 1);
+	GameTooltip:Show();
+end
+
+-----------------------------------------
+
+function Atr_pawnScaleDD_Initialize()
+
+	local info = UIDropDownMenu_CreateInfo();
+
+	if (not AuctionatorPawn or not AuctionatorPawn:IsAvailable()) then
+		Atr_AddMenuPick (info, "|cff999999PAWN not installed|r", "", Atr_pawnScaleDD_OnClick);
+		return;
+	end
+
+	local scales = AuctionatorPawn:GetScaleList();
+
+	if (not scales or #scales == 0) then
+		Atr_AddMenuPick (info, "|cff999999No PAWN scales found|r", "", Atr_pawnScaleDD_OnClick);
+		return;
+	end
+
+	for _, scaleName in ipairs(scales) do
+		Atr_AddMenuPick (info, scaleName, scaleName, Atr_pawnScaleDD_OnClick);
+	end
+
+end
+
+-----------------------------------------
+
+function Atr_pawnScaleDD_OnClick(self)
+	UIDropDownMenu_SetSelectedValue(self.owner, self.value);
+end
+
+-----------------------------------------
+
+function Atr_pawnScaleDD_Refresh()
+
+	if (not AuctionatorPawn) then
+		Atr_PawnScaleFrame:Hide();
+		Atr_pawnScaleDD:Hide();
+		return;
+	end
+
+	AuctionatorPawn:Initialize();
+
+	if (not AuctionatorPawn:IsAvailable()) then
+		Atr_PawnScaleFrame:Hide();
+		Atr_pawnScaleDD:Hide();
+		return;
+	end
+
+	Atr_PawnScaleFrame:Show();
+	Atr_pawnScaleDD:Show();
+
+	UIDropDownMenu_Initialize(Atr_pawnScaleDD, Atr_pawnScaleDD_Initialize);
+
+	local configuredScale = AuctionatorPawn:GetConfiguredScale();
+	if (configuredScale) then
+		UIDropDownMenu_SetSelectedValue(Atr_pawnScaleDD, configuredScale);
+	else
+		local scales = AuctionatorPawn:GetScaleList();
+		if (scales and #scales > 0) then
+			UIDropDownMenu_SetSelectedValue(Atr_pawnScaleDD, scales[1]);
+		end
+	end
+
+end
+
+-----------------------------------------
+
+function Atr_pawnScaleDD_showTip(self)
+
+	GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+	GameTooltip:SetText("PAWN Scale", 0.9, 1.0, 1.0);
+	GameTooltip:AddLine("Select which PAWN scale to use for scoring items in the auction house", 0.5, 0.5, 1.0, 1);
 	GameTooltip:Show();
 end
 
